@@ -1,8 +1,7 @@
 import { useMemo } from "react"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import { QueryClient, useQueryClient } from "@tanstack/react-query"
 
-export const createAppRouter = (queryClient: QueryClient) =>
+export const createAppRouter = () =>
     createBrowserRouter([
         {
             path: '/',
@@ -10,12 +9,25 @@ export const createAppRouter = (queryClient: QueryClient) =>
                 const { LoginRoute } = await import('./routes/auth/login')
                 return { Component: LoginRoute};
             }
+        },
+        {
+            path: '/dashboard',
+            lazy: async () => {
+                const { AdminDashboardRoute } = await import('./routes/app/admin/admin-dashboard')
+                return { Component: AdminDashboardRoute };
+            }
+        },
+        {
+            path: '*',
+            lazy: async () => {
+                const { NotFoundRoute } = await import('./routes/not-found')
+                return { Component: NotFoundRoute };
+            }
         }
     ]);
 
 export const AppRouter = () => {
-    const queryClient = useQueryClient();
-    const router = useMemo(() => createAppRouter(queryClient), [queryClient])
+    const router = useMemo(() => createAppRouter(), [])
 
     return <RouterProvider router={router}/>;
 }
